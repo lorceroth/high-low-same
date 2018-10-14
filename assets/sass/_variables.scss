@@ -1,0 +1,25 @@
+// Fonts
+$font-family-sans-serif: 'Montserrat', sans-serif;
+$font-family-cursive: 'Pacifico', cursive;
+
+$font-size-normal: 24px;
+
+// Colors
+$yellow-lightest: #fdffc0;
+$yellow-light: #f9ff52;
+$yellow: #e3e943;
+$yellow-dark: #545600;
+
+$orange: #f3bf2e;
+
+$green-lighter: #53aa53;
+$green: #419241;
+$green-darker: #3b743b;
+$green-dark: #2c5c2c;
+$white: #fff;
+
+// Body
+$body-font-family: $font-family-sans-serif;
+$body-font-size: $font-size-normal;
+$body-background: radial-gradient($green, $green-dark);
+$body-color: $white;
