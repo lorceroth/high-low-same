@@ -83,7 +83,7 @@
                     this.$store.commit('start');
                     this.$store.commit('incrementDraws');
                 }, 500);
-            }
+            },
         },
     }
 </script>

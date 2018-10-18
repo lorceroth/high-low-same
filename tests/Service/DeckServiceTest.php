@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Tests\Service;
+
+use PHPUnit\Framework\TestCase;
+use App\Service\DeckService;
+use App\Tests\Api\TestApi;
+use App\Model\Card;
+
+class DeckServiceTest extends TestCase
+{
+    public function testGetNewDeck()
+    {
+        $decks = $this->createDeckService();
+        $deck = $decks->getNewDeck();
+
+        $this->assertNotNull($deck->getId());
+        $this->assertNotNull($deck->getRemaining());
+        $this->assertTrue($deck->getCards()->isEmpty());
+    }
+
+    public function testDrawCard()
+    {
+        $decks = $this->createDeckService();
+        $deck = $decks->getNewDeck();
+        $deck = $decks->drawCard($deck->getId());
+
+        $this->assertInstanceOf(Card::class, $deck->getCards()->first());
+    }
+
+    public function testReshuffleCards()
+    {
+        $decks = $this->createDeckService();
+        $deck = $decks->getNewDeck();
+
+        $this->assertEquals(52, $deck->getRemaining());
+
+        $deck = $decks->drawCard($deck->getId());
+
+        $this->assertEquals(51, $deck->getRemaining());
+
+        $deck = $decks->reshuffleCards($deck->getId());
+
+        $this->assertEquals(52, $deck->getRemaining());
+    }
+
+    /**
+     * To avoid creating 100s of new decks every test, we use a TestApi class
+     * that implements the DeckApiInterface and simulates the
+     * logic from the DeckOfCards API.
+     *
+     * @return DeckApiInterface
+     */
+    private function createDeckService(): DeckService
+    {
+        $api = new TestApi();
+
+        return new DeckService($api);
+
+        // $client = new Client();
+        // $api = new DeckOfCardsApi($client);
+
+        // return new DeckService($api);
+    }
+}
