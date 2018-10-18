@@ -1,4 +1,5 @@
-import { calculatePoints } from '../score';
+import { Deck } from '@app/models/deck';
+import { calculatePoints } from '@app/score';
 
 export default {
     /**
@@ -13,9 +14,7 @@ export default {
             state.totalTime += 1;
         }, 1000);
 
-        state.timeSinceLastDrawIntervalId = setInterval(() => {
-            state.timeSinceLastDraw += 1;
-        }, 1000);
+        state.drawTimeStart = Date.now();
     },
 
     /**
@@ -27,7 +26,6 @@ export default {
         state.running = false;
 
         clearInterval(state.totalTimeIntervalId);
-        clearInterval(state.timeSinceLastDrawIntervalId);
     },
 
     /**
@@ -38,10 +36,14 @@ export default {
     reset(state) {
         state.score = 0;
         state.draws = 0;
+
         state.totalTime = 0;
+        clearInterval(state.totalTimeIntervalId);
         state.totalTimeIntervalId = 0;
-        state.timeSinceLastDraw = 0;
-        state.timeSinceLastDrawIntervalId = 0;
+
+        state.drawTimes = [];
+        state.drawTimeStart = Date.now();
+
         state.lastNumberOfPoints = 0;
         state.win = false;
         state.gameOver = false;
@@ -53,7 +55,11 @@ export default {
      * @param {object} state
      */
     incrementScore(state) {
-        let points = calculatePoints(state.timeSinceLastDraw);
+        state.drawTimeSeconds = (Date.now() - state.drawTimeStart) / 1000;
+
+        let points = calculatePoints(
+            Math.round(state.drawTimeSeconds)
+        );
 
         state.lastNumberOfPoints = points;
         state.score += points;
@@ -69,12 +75,24 @@ export default {
     },
 
     /**
+     * Update the deck.
+     *
+     * @param {object} state
+     * @param {object} deck
+     */
+    updateDeck(state, deck) {
+        state.deck = Deck.createFromObject(deck);
+    },
+
+    /**
      * Resets the seconds from the last draw.
      *
      * @param {object} state
      */
     resetTimeSinceLastDraw(state) {
-        state.timeSinceLastDraw = 0;
+        state.drawTimes.push(state.drawTimeSeconds);
+
+        state.drawTimeStart = Date.now();
     },
 
     /**
@@ -87,7 +105,6 @@ export default {
         state.win = true;
 
         clearInterval(state.totalTimeIntervalId);
-        clearInterval(state.timeSinceLastDrawIntervalId);
     },
 
     /**
@@ -100,6 +117,5 @@ export default {
         state.gameOver = true;
 
         clearInterval(state.totalTimeIntervalId);
-        clearInterval(state.timeSinceLastDrawIntervalId);
     },
 };

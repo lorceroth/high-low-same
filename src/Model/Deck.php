@@ -56,6 +56,11 @@ class Deck
         return $this->cards;
     }
 
+    public function getFirstCard(): Card
+    {
+        return $this->cards->first();
+    }
+
     public function addCards(array $cards): self
     {
         foreach ($cards as $card) {

@@ -2,10 +2,11 @@
 
 namespace App\Tests\Service;
 
-use PHPUnit\Framework\TestCase;
+use App\Api\DeckTestApi;
+use App\Model\Card;
 use App\Service\DeckService;
 use App\Tests\Api\TestApi;
-use App\Model\Card;
+use PHPUnit\Framework\TestCase;
 
 class DeckServiceTest extends TestCase
 {
@@ -45,7 +46,7 @@ class DeckServiceTest extends TestCase
     }
 
     /**
-     * To avoid creating 100s of new decks every test, we use a TestApi class
+     * To avoid creating 100s of new decks every test, we use a DeckTestApi class
      * that implements the DeckApiInterface and simulates the
      * logic from the DeckOfCards API.
      *
@@ -53,7 +54,7 @@ class DeckServiceTest extends TestCase
      */
     private function createDeckService(): DeckService
     {
-        $api = new TestApi();
+        $api = new DeckTestApi();
 
         return new DeckService($api);
 

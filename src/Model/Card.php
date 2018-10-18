@@ -53,6 +53,31 @@ class Card
         return $this->value;
     }
 
+    public function getValueAsInt(): ?int
+    {
+        $value = $this->value;
+
+        switch ($value) {
+            case 'ACE':
+                $value = 1;
+                break;
+            case '0':
+                $value = 10;
+                break;
+            case 'JACK':
+                $value = 11;
+                break;
+            case 'QUEEN':
+                $value = 12;
+                break;
+            case 'KING':
+                $value = 13;
+                break;
+        }
+
+        return (int)$value;
+    }
+
     public function setValue(string $value): self
     {
         $this->value = $value;
@@ -70,5 +95,29 @@ class Card
         $this->image = $image;
 
         return $this;
+    }
+
+    public function isLower(Card $card): bool
+    {
+        $value = $this->getValueAsInt();
+        $otherValue = $card->getValueAsInt();
+
+        return $value < $otherValue;
+    }
+
+    public function isSame(Card $card): bool
+    {
+        $value = $this->getValueAsInt();
+        $otherValue = $card->getValueAsInt();
+
+        return $value === $otherValue;
+    }
+
+    public function isHigher(Card $card): bool
+    {
+        $value = $this->getValueAsInt();
+        $otherValue = $card->getValueAsInt();
+
+        return $value > $otherValue;
     }
 }

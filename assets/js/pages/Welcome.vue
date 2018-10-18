@@ -36,9 +36,17 @@
         <div class="welcome__container">
             <img class="welcome__logo" src="/images/logo.svg" alt="Logotype" />
 
-            <c-button to="/board" width="50%">
-                Play
-            </c-button>
+            <c-button-group direction="column" :gutter="15" :center-buttons="true">
+                <c-button to="/board" width="50%">
+                    Play
+                </c-button>
+                <c-button to="/scoreboard" width="50%">
+                    Scoreboard
+                </c-button>
+                <c-button to="/instructions" width="50%">
+                    Instructions
+                </c-button>
+            </c-button-group>
         </div>
     </div>
 </template>

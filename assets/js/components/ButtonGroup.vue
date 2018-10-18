@@ -7,7 +7,11 @@
             },
             gutter: {
                 type: Number,
-            }
+            },
+            centerButtons: {
+                type: Boolean,
+                default: false,
+            },
         },
 
         data() {
@@ -37,6 +41,11 @@
                 this.$children.map($child => {
                     $child.$el.style.margin = this.gutterOffsetPixels;
                     $child.$el.style.flex = 1;
+
+                    if (this.centerButtons) {
+                        $child.$el.style.marginLeft = 'auto';
+                        $child.$el.style.marginRight = 'auto';
+                    }
                 });
             }
         },

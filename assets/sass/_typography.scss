@@ -13,8 +13,13 @@ p {
 }
 
 a {
-    color: inherit;
+    color: $yellow;
     text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        color: $yellow-light;
+    }
 }
 
 .list {
@@ -29,4 +34,8 @@ a {
 
 strong {
     font-weight: 500;
+}
+
+small {
+    font-size: 16px;
 }

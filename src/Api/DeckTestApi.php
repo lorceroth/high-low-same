@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Api;
+namespace App\Api;
 
 use App\Api\DeckApiInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -14,13 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * This class is a simple mock of Deck of Cards API to avoid creating 100s of
  * new decks when running tests. *cough* :)
  */
-class TestApi implements DeckApiInterface
+class DeckTestApi implements DeckApiInterface
 {
-    /**
-     * @var int
-     */
-    private static $deckId = 0;
-
     /**
      * @var DiactorosFactory
      */
@@ -49,7 +44,7 @@ class TestApi implements DeckApiInterface
             'id' => 'deck_id',
             'remaining' => 'remaining',
             'cards' => 'cards',
-            'cardProperties' => [
+            'cards.properties' => [
                 'code' => 'code',
                 'suit' => 'suit',
                 'value' => 'value',
@@ -60,8 +55,6 @@ class TestApi implements DeckApiInterface
 
     public function getNewDeck(): ResponseInterface
     {
-        self::$deckId += 1;
-
         $this->deck = $this->createDeck();
 
         $response = new JsonResponse($this->deck);
@@ -76,6 +69,7 @@ class TestApi implements DeckApiInterface
         }
 
         $this->deck['remaining'] -= 1;
+
         $card = $this->cards[array_rand($this->cards)];
         $this->deck['cards'] = [$card];
 
@@ -101,7 +95,7 @@ class TestApi implements DeckApiInterface
     {
         return [
             'success' => true,
-            'deck_id' => self::$deckId,
+            'deck_id' => 'abc123',
             'shuffled' => true,
             'remaining' => 52,
         ];
@@ -126,7 +120,7 @@ class TestApi implements DeckApiInterface
         ];
 
         $suits = [
-            'S' => 'SPACES',
+            'S' => 'SPADES',
             'D' => 'DIAMONDS',
             'H' => 'HEARTS',
             'C' => 'CLUBS',

@@ -2,21 +2,43 @@
 
 namespace App\Controller\Api;
 
+use App\Comparer\CardComparer;
+use App\Model\Card;
+use App\Service\DeckService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Service\DeckService;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/decks")
  */
 class DecksController extends AbstractController
 {
+    /**
+     * @var DeckService
+     */
     private $decks;
 
-    public function __construct(DeckService $decks)
+    /**
+     * @var CardComparer
+     */
+    private $comparer;
+
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    public function __construct(
+        DeckService $decks,
+        CardComparer $comparer,
+        SerializerInterface $serializer)
     {
         $this->decks = $decks;
+        $this->comparer = $comparer;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -25,27 +47,42 @@ class DecksController extends AbstractController
     public function new(): Response
     {
         $deck = $this->decks->getNewDeck();
+        $deck = $this->decks->drawCard($deck->getId());
 
-        return $this->json($deck);
+        return $this->json([
+            'deck' => $deck,
+        ]);
     }
 
     /**
-     * @Route("/{deckId}/draw", methods={"GET"}, name="draw_card")
+     * @Route("/{id}/draw", methods={"POST"}, name="draw_card")
      */
-    public function draw(string $deckId): Response
+    public function draw($id, Request $request): Response
     {
-        $deck = $this->decks->drawCard($deckId);
+        $choice = strtolower($request->query->get('choice'));
+        $oldCard = $this->serializer->deserialize($request->getContent(), Card::class, 'json');
 
-        return $this->json($deck);
+        $deck = $this->decks->drawCard($id);
+        $newCard = $deck->getFirstCard();
+
+        $isCorrect = $this->comparer->compare($newCard, $oldCard, $choice);
+
+        return $this->json([
+            'isCorrect' => $isCorrect,
+            'deck' => $deck,
+        ]);
     }
 
     /**
-     * @Route("/{deckId}/restart", methods={"GET"}, name="restart_game")
+     * @Route("/{id}/restart", methods={"GET"}, name="restart_game")
      */
-    public function restart(string $deckId): Response
+    public function restart(string $id): Response
     {
-        $deck = $this->decks->reshuffleCards($deckId);
+        $deck = $this->decks->reshuffleCards($id);
+        $deck = $this->decks->drawCard($id);
 
-        return $this->json($deck);
+        return $this->json([
+            'deck' => $deck,
+        ]);
     }
 }

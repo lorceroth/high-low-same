@@ -1,3 +1,5 @@
+import { Deck } from '@app/models/deck';
+
 export default {
     /**
      * Indicate that the game is started. The player can still browse the
@@ -23,6 +25,35 @@ export default {
     draws: 0,
 
     /**
+     * Collections of seconds for each draw used to calculate the
+     * average draw time.
+     *
+     * @type {number}
+     */
+    drawTimes: [],
+
+    /**
+     * The start time of the current draw.
+     *
+     * @type {Date}
+     */
+    drawTimeStart: null,
+
+    /**
+     * The total draw time in seconds, used by the score system.
+     *
+     * @type {number}
+     */
+    drawTimeSeconds: 0,
+
+    /**
+     * The current deck.
+     *
+     * @type {object}
+     */
+    deck: new Deck(),
+
+    /**
      * The time of the current game in seconds.
      *
      * @type {number}
@@ -35,20 +66,6 @@ export default {
      * @type {number}
      */
     totalTimeIntervalId: 0,
-
-    /**
-     * The time since the last draw in seconds.
-     *
-     * @type {number}
-     */
-    timeSinceLastDraw: 0,
-
-    /**
-     * ID for the interval that updates the time since the last draw.
-     *
-     * @type {number}
-     */
-    timeSinceLastDrawIntervalId: 0,
 
     /**
      * Last number of points given to the player the last draw.

@@ -2,10 +2,11 @@
 
 namespace App\Tests\Api;
 
-use PHPUnit\Framework\TestCase;
 use App\Api\DeckApiInterface;
-use GuzzleHttp\Client;
 use App\Api\DeckOfCardsApi;
+use GuzzleHttp\Client;
+use PHPUnit\Framework\TestCase;
+use App\Api\DeckTestApi;
 
 class DeckApiTest extends TestCase
 {
@@ -62,7 +63,7 @@ class DeckApiTest extends TestCase
     }
 
     /**
-     * To avoid creating 100s of new decks every test, we use a TestApi class
+     * To avoid creating 100s of new decks every test, we use a DeckTestApi class
      * that implements the DeckApiInterface and simulates the
      * logic from the DeckOfCards API.
      *
@@ -70,7 +71,7 @@ class DeckApiTest extends TestCase
      */
     private function createApi(): DeckApiInterface
     {
-        return new TestApi();
+        return new DeckTestApi();
 
         // $client = new Client();
         // $api = new DeckOfCardsApi($client);

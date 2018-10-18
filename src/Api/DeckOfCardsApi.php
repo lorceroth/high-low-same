@@ -28,7 +28,7 @@ class DeckOfCardsApi implements DeckApiInterface
             'id' => 'deck_id',
             'remaining' => 'remaining',
             'cards' => 'cards',
-            'cardProperties' => [
+            'cards.properties' => [
                 'code' => 'code',
                 'suit' => 'suit',
                 'value' => 'value',
@@ -42,7 +42,7 @@ class DeckOfCardsApi implements DeckApiInterface
      */
     public function getNewDeck(): ResponseInterface
     {
-        return $this->client->request('GET', self::BASE_URL.'/new');
+        return $this->client->request('GET', self::BASE_URL.'/new/shuffle');
     }
 
     /**

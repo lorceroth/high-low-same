@@ -16,20 +16,20 @@ class DeckService
     private $api;
 
     /**
-     * @var array
-     */
-    private $mappingProperties;
-
-    /**
      * @var \Symfony\Component\PropertyAccess\PropertyAccessor
      */
     private $accessor;
 
+    /**
+     * @var array
+     */
+    private $mappingProperties;
+
     public function __construct(DeckApiInterface $api)
     {
         $this->api = $api;
-        $this->mappingProperties = $api->getMappingProperties();
         $this->accessor = PropertyAccess::createPropertyAccessor();
+        $this->mappingProperties = $api->getMappingProperties();
     }
 
     public function getNewDeck(): Deck
@@ -39,16 +39,16 @@ class DeckService
         return $this->createDeckFromResponse($response);
     }
 
-    public function drawCard(string $deckId): Deck
+    public function drawCard(string $id): Deck
     {
-        $response = $this->api->drawCard($deckId);
+        $response = $this->api->drawCard($id);
 
         return $this->createDeckFromResponse($response);
     }
 
-    public function reshuffleCards(string $deckId): Deck
+    public function reshuffleCards(string $id): Deck
     {
-        $response = $this->api->reshuffleCards($deckId);
+        $response = $this->api->reshuffleCards($id);
 
         return $this->createDeckFromResponse($response);
     }
@@ -58,20 +58,18 @@ class DeckService
         $deck = new Deck();
         $data = json_decode($response->getBody(), true);
 
-        $mappingProperties = $this->mappingProperties;
+        $properties = $this->mappingProperties;
         $accessor = $this->accessor;
 
         $deck->setId(
-            $accessor->getValue($data, '['.$this->mappingProperties['id'].']')
+            $accessor->getValue($data, sprintf('[%s]', $properties['id']))
         );
 
         $deck->setRemaining(
-            $accessor->getValue($data, '['.$this->mappingProperties['remaining'].']')
+            $accessor->getValue($data, sprintf('[%s]', $properties['remaining']))
         );
 
-        $cards = $accessor->getValue($data, '['.$this->mappingProperties['cards'].']');
-
-        if (null !== $cards) {
+        if ($accessor->getValue($data, sprintf('[%s]', $properties['cards']))) {
             $deck->addCards($this->createCardsFromArray($data));
         }
 
@@ -82,26 +80,26 @@ class DeckService
     {
         $cards = [];
 
-        $mappingProperties = $this->mappingProperties['cardProperties'];
+        $properties = $this->mappingProperties['cards.properties'];
         $accessor = $this->accessor;
 
         foreach ($data[$this->mappingProperties['cards']] as $cardData) {
             $card = new Card();
 
             $card->setCode(
-                $accessor->getValue($cardData, '['.$mappingProperties['code'].']')
+                $accessor->getValue($cardData, sprintf('[%s]', $properties['code']))
             );
 
             $card->setSuit(
-                $accessor->getValue($cardData, '['.$mappingProperties['suit'].']')
+                $accessor->getValue($cardData, sprintf('[%s]', $properties['suit']))
             );
 
             $card->setValue(
-                $accessor->getValue($cardData, '['.$mappingProperties['value'].']')
+                $accessor->getValue($cardData, sprintf('[%s]', $properties['value']))
             );
 
             $card->setImage(
-                $accessor->getValue($cardData, '['.$mappingProperties['image'].']')
+                $accessor->getValue($cardData, sprintf('[%s]', $properties['image']))
             );
 
             $cards[] = $card;

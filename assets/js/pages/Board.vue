@@ -1,12 +1,13 @@
 <script>
     import axios from 'axios';
-    import moment from 'moment';
-    import api from '@app/api';
+    import api from '@app/api'
+    import { GameSession } from '@app/gameSession';
 
     export default {
         data() {
             return {
                 loading: false,
+                session: new GameSession(),
             };
         },
 
@@ -21,6 +22,10 @@
 
             draws() {
                 return this.$store.state.draws;
+            },
+
+            deck() {
+                return this.$store.state.deck;
             },
 
             formattedTime() {
@@ -43,31 +48,72 @@
         methods: {
             onStartClick() {
                 this.loading = true;
+                let url;
 
-                setTimeout(() => {
-                    this.loading = false;
-                    this.$store.commit('reset');
-                    this.$store.commit('start');
-                    this.$store.commit('incrementDraws');
-                }, 500);
+                if (this.session.isValid()) {
+                    url = api.restart.replace('{id}', this.session.getDeckId());
+                }
+                else {
+                    url = api.new;
+                }
+
+                axios.get(url)
+                    .then(response => {
+                        this.loading = false;
+                        console.log(response);
+
+                        let deck = response.data.deck;
+
+                        this.$store.commit('reset');
+                        this.$store.commit('start');
+                        this.$store.commit('incrementDraws');
+                        this.$store.commit('updateDeck', deck);
+
+                        if (!this.session.isValid()) {
+                            this.session.saveDeckId(deck.id);
+                        }
+                    })
+                    .catch(err => {
+                        this.loading = false;
+                        console.log(err);
+                    });
             },
 
             onChoiceClick(choice) {
                 this.loading = true;
 
-                setTimeout(() => {
-                    this.loading = false;
+                let url = api.draw.replace('{id}', this.deck.id);
+                let card = this.deck.card;
+                let config = {
+                    params: {
+                        choice,
+                    },
+                };
 
-                    switch (choice) {
-                        case 0:
+                axios.post(url, card, config)
+                    .then(response => {
+                        this.loading = false;
+                        console.log(response);
+
+                        let isCorrect = response.data.isCorrect;
+                        let deck = response.data.deck;
+
+                        if (!isCorrect) {
+                            this.$store.commit('triggerGameOver');
+
+                            this.session.updateLastGame();
+                        }
+                        else {
                             this.$store.commit('incrementScore');
                             this.$store.commit('incrementDraws');
                             this.$store.commit('resetTimeSinceLastDraw');
-                            break;
-                        default:
-                            this.$store.commit('triggerGameOver');
-                    }
-                }, 500);
+                            this.$store.commit('updateDeck', deck);
+                        }
+                    })
+                    .catch(err => {
+                        this.loading = false;
+                        console.log(err);
+                    });
             },
 
             onSaveClick() {
@@ -77,12 +123,24 @@
             onPlayAgainClick() {
                 this.loading = true;
 
-                setTimeout(() => {
-                    this.loading = false;
-                    this.$store.commit('reset');
-                    this.$store.commit('start');
-                    this.$store.commit('incrementDraws');
-                }, 500);
+                let url = api.restart.replace('{id}', this.deck.id);
+
+                axios.get(url)
+                    .then(response => {
+                        this.loading = false;
+                        console.log(response);
+
+                        let deck = response.data.deck;
+
+                        this.$store.commit('reset');
+                        this.$store.commit('start');
+                        this.$store.commit('incrementDraws');
+                        this.$store.commit('updateDeck', deck);
+                    })
+                    .catch(err => {
+                        this.loading = false;
+                        console.log(err);
+                    });
             },
         },
     }
@@ -188,8 +246,9 @@
                 <div v-if="!loading && running && draws === 1">
                     <h2 class="board__message-title board__message-title--success">Nice job!</h2>
                     <p style="margin-bottom: 15px">
-                        You got a "CARD_HERE"! Now you have to guess if the next card is going
-                        to be lower, same or higher than this one.
+                        You got a {{ deck.card.displayName }}! Now you have to guess if the next card is going
+                        to be lower, same or higher than this one.<br />
+                        <small>Wanna retry? <a @click.prevent="onPlayAgainClick">Restart the game</a>.</small>
                     </p>
                 </div>
 
@@ -212,15 +271,15 @@
                 </div>
             </div>
 
-            <c-card></c-card>
+            <c-card :image="deck.card.image"></c-card>
         </div>
 
         <div class="board__actions board__row">
             <h2 class="board__heading">What's next?</h2>
             <c-button-group :gutter="15">
-                <c-button :action="onChoiceClick.bind(this, 0)" :disabled="loading || !running">Lower</c-button>
-                <c-button :action="onChoiceClick.bind(this, 1)" :disabled="loading || !running">Same</c-button>
-                <c-button :action="onChoiceClick.bind(this, 2)" :disabled="loading || !running">Higher</c-button>
+                <c-button :action="onChoiceClick.bind(this, 'lower')" :disabled="loading || !running || deck.card.value === 'ACE'">Lower</c-button>
+                <c-button :action="onChoiceClick.bind(this, 'same')" :disabled="loading || !running">Same</c-button>
+                <c-button :action="onChoiceClick.bind(this, 'higher')" :disabled="loading || !running || deck.card.value === 'KING'">Higher</c-button>
             </c-button-group>
         </div>
 
@@ -231,11 +290,11 @@
                 <ul class="list">
                     <li class="list__item board__stats-item">
                         <strong>Remaining:</strong>
-                        <span>52</span>
+                        <span>{{ deck.remaining }}</span>
                     </li>
                     <li class="list__item board__stats-item">
                         <strong>Last choice:</strong>
-                        <span>Higher</span>
+                        <span>{{ deck.card.displayName }}</span>
                     </li>
                 </ul>
 
