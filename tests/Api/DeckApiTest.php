@@ -4,9 +4,9 @@ namespace App\Tests\Api;
 
 use App\Api\DeckApiInterface;
 use App\Api\DeckOfCardsApi;
+use App\Api\DeckTestApi;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
-use App\Api\DeckTestApi;
 
 class DeckApiTest extends TestCase
 {
@@ -16,7 +16,7 @@ class DeckApiTest extends TestCase
         $response = $api->getNewDeck();
         $deck = json_decode($response->getBody(), true);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
         $this->assertNotNull($deck['deck_id']);
         $this->assertNotNull($deck['remaining']);
     }
@@ -31,11 +31,11 @@ class DeckApiTest extends TestCase
         $secondResponse = $api->drawCard($firstDeck['deck_id']);
         $secondDeck = json_decode($secondResponse->getBody(), true);
 
-        $this->assertEquals(200, $firstResponse->getStatusCode());
-        $this->assertEquals(52, $firstDeck['remaining']);
+        $this->assertSame(200, $firstResponse->getStatusCode());
+        $this->assertSame(52, $firstDeck['remaining']);
 
-        $this->assertEquals(200, $secondResponse->getStatusCode());
-        $this->assertEquals(51, $secondDeck['remaining']);
+        $this->assertSame(200, $secondResponse->getStatusCode());
+        $this->assertSame(51, $secondDeck['remaining']);
     }
 
     public function testReshuffleCards()
@@ -52,14 +52,14 @@ class DeckApiTest extends TestCase
         $thirdResponse = $api->reshuffleCards($firstDeck['deck_id']);
         $thirdDeck = json_decode($thirdResponse->getBody(), true);
 
-        $this->assertEquals(200, $firstResponse->getStatusCode());
-        $this->assertEquals(52, $firstDeck['remaining']);
+        $this->assertSame(200, $firstResponse->getStatusCode());
+        $this->assertSame(52, $firstDeck['remaining']);
 
-        $this->assertEquals(200, $secondResponse->getStatusCode());
-        $this->assertEquals(51, $secondDeck['remaining']);
+        $this->assertSame(200, $secondResponse->getStatusCode());
+        $this->assertSame(51, $secondDeck['remaining']);
 
-        $this->assertEquals(200, $thirdResponse->getStatusCode());
-        $this->assertEquals(52, $thirdDeck['remaining']);
+        $this->assertSame(200, $thirdResponse->getStatusCode());
+        $this->assertSame(52, $thirdDeck['remaining']);
     }
 
     /**

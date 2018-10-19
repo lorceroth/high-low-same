@@ -5,7 +5,6 @@ namespace App\Tests\Service;
 use App\Api\DeckTestApi;
 use App\Model\Card;
 use App\Service\DeckService;
-use App\Tests\Api\TestApi;
 use PHPUnit\Framework\TestCase;
 
 class DeckServiceTest extends TestCase
@@ -34,15 +33,15 @@ class DeckServiceTest extends TestCase
         $decks = $this->createDeckService();
         $deck = $decks->getNewDeck();
 
-        $this->assertEquals(52, $deck->getRemaining());
+        $this->assertSame(52, $deck->getRemaining());
 
         $deck = $decks->drawCard($deck->getId());
 
-        $this->assertEquals(51, $deck->getRemaining());
+        $this->assertSame(51, $deck->getRemaining());
 
         $deck = $decks->reshuffleCards($deck->getId());
 
-        $this->assertEquals(52, $deck->getRemaining());
+        $this->assertSame(52, $deck->getRemaining());
     }
 
     /**

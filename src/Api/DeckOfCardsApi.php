@@ -20,7 +20,7 @@ class DeckOfCardsApi implements DeckApiInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getMappingProperties(): array
     {
@@ -38,7 +38,7 @@ class DeckOfCardsApi implements DeckApiInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getNewDeck(): ResponseInterface
     {
@@ -46,7 +46,7 @@ class DeckOfCardsApi implements DeckApiInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function drawCard(string $deckId): ResponseInterface
     {
@@ -58,7 +58,7 @@ class DeckOfCardsApi implements DeckApiInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function reshuffleCards(string $deckId): ResponseInterface
     {

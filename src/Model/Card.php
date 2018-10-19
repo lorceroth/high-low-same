@@ -75,7 +75,7 @@ class Card
                 break;
         }
 
-        return (int)$value;
+        return (int) $value;
     }
 
     public function setValue(string $value): self
@@ -97,7 +97,7 @@ class Card
         return $this;
     }
 
-    public function isLower(Card $card): bool
+    public function isLower(self $card): bool
     {
         $value = $this->getValueAsInt();
         $otherValue = $card->getValueAsInt();
@@ -105,7 +105,7 @@ class Card
         return $value < $otherValue;
     }
 
-    public function isSame(Card $card): bool
+    public function isSame(self $card): bool
     {
         $value = $this->getValueAsInt();
         $otherValue = $card->getValueAsInt();
@@ -113,7 +113,7 @@ class Card
         return $value === $otherValue;
     }
 
-    public function isHigher(Card $card): bool
+    public function isHigher(self $card): bool
     {
         $value = $this->getValueAsInt();
         $otherValue = $card->getValueAsInt();

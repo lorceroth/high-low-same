@@ -2,7 +2,6 @@
 
 namespace App\Api;
 
-use App\Api\DeckApiInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -68,7 +67,7 @@ class DeckTestApi implements DeckApiInterface
             $this->deck = $this->createDeck();
         }
 
-        $this->deck['remaining'] -= 1;
+        --$this->deck['remaining'];
 
         $card = $this->cards[array_rand($this->cards)];
         $this->deck['cards'] = [$card];

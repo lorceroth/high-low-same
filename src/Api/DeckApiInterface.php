@@ -24,6 +24,7 @@ interface DeckApiInterface
      * Draw a card from a deck.
      *
      * @param string $deckId
+     *
      * @return void
      */
     public function drawCard(string $deckId): ResponseInterface;
@@ -32,6 +33,7 @@ interface DeckApiInterface
      * Reshuffles the cards in an existing deck.
      *
      * @param string $deckId
+     *
      * @return void
      */
     public function reshuffleCards(string $deckId): ResponseInterface;
