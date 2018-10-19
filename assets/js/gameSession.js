@@ -1,19 +1,41 @@
 import moment from 'moment';
 
 export class GameSession {
-    constructor() {
-        this.deckId = localStorage.getItem('deckId');
-        this.deckIdExpires = localStorage.getItem('deckIdExpires');
-        this.lastGame = localStorage.getItem('lastGame');
+    get deckId() {
+        return localStorage.getItem('deckId');
     }
 
-    getDeckId() {
-        return this.deckId;
+    set deckId(value) {
+        localStorage.setItem('deckId', value);
+    }
+
+    get deckIdExpires() {
+        return localStorage.getItem('deckIdExpires');
+    }
+
+    set deckIdExpires(value) {
+        localStorage.setItem('deckIdExpires', value);
+    }
+
+    get lastGame() {
+        return localStorage.getItem('lastGame');
+    }
+
+    set lastGame(value) {
+        localStorage.setItem('lastGame', value);
+    }
+
+    get lastGameSaved() {
+        return localStorage.getItem('lastGameSaved') == 'true';
+    }
+
+    set lastGameSaved(value) {
+        localStorage.setItem('lastGameSaved', value);
     }
 
     saveDeckId(id) {
-        localStorage.setItem('deckId', id);
-        localStorage.setItem('deckIdExpires', moment().add('1', 'week').format());
+        this.deckId = id;
+        this.deckIdExpires = moment().add('1', 'week').format();
     }
 
     isValid() {
@@ -23,6 +45,19 @@ export class GameSession {
     }
 
     updateLastGame() {
-        localStorage.setItem('lastGame', moment().format());
+        this.lastGame = moment().format();
+    }
+
+    saveLastGame() {
+        this.lastGameSaved = true;
+    }
+
+    startNewGame() {
+        this.lastGame = null;
+        this.lastGameSaved = false;
+    }
+
+    canSaveGame() {
+        return null !== this.lastGame && false === this.lastGameSaved;
     }
 }

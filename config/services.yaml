@@ -18,8 +18,8 @@ services:
     GuzzleHttp\ClientInterface:
         class: GuzzleHttp\Client
 
-    App\Api\DeckApiInterface:
-        class: App\Api\DeckTestApi
-
     # App\Api\DeckApiInterface:
-    #     class: App\Api\DeckOfCardsApi
+    #     class: App\Api\DeckTestApi
+
+    App\Api\DeckApiInterface:
+        class: App\Api\DeckOfCardsApi

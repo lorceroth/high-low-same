@@ -1,5 +1,36 @@
 <script>
-    export default {}
+    import axios from 'axios';
+    import moment from 'moment';
+    import api from '@app/api';
+
+    export default {
+        data() {
+            return {
+                scores: [],
+            };
+        },
+
+        methods: {
+            getTopScores() {
+                axios.get(api.getTopScores)
+                    .then(response => {
+                        console.log(response);
+                        this.scores = response.data.scores;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            },
+
+            formatDate(date) {
+                return moment(date).format('MMM Do, YYYY');
+            },
+        },
+
+        created() {
+            this.getTopScores();
+        },
+    }
 </script>
 
 <style lang="scss" scoped>
@@ -44,7 +75,7 @@
 
             &:first-child {
                 text-align: left;
-                width: 40%;
+                width: 30%;
             }
 
             &--heading {
@@ -57,88 +88,59 @@
             color: $yellow-light;
         }
     }
-
-    .header {
-        text-align: center;
-
-        &__logo {
-            height: 200px;
-        }
-    }
 </style>
 
 <template>
     <div class="scoreboard">
 
-        <header class="header board__row">
-            <img class="header__logo" src="/images/logo.svg" alt="Logotype" />
-        </header>
+        <c-header />
 
         <h2 class="scoreboard__heading">Scoreboard</h2>
 
         <table class="scoreboard__table">
+
             <thead>
                 <tr class="scoreboard__table-row scoreboard__table-row--heading">
                     <th class="scoreboard__table-cell scoreboard__table-cell--heading">Name</th>
                     <th class="scoreboard__table-cell scoreboard__table-cell--heading">Score</th>
+                    <th class="scoreboard__table-cell scoreboard__table-cell--heading">Draws</th>
                     <th class="scoreboard__table-cell scoreboard__table-cell--heading">Average draw time</th>
                     <th class="scoreboard__table-cell scoreboard__table-cell--heading">Total time</th>
                     <th class="scoreboard__table-cell scoreboard__table-cell--heading">Played</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr class="scoreboard__table-row">
+
+            <tbody v-if="scores.length > 0">
+                <tr class="scoreboard__table-row" v-for="score in scores" :key="score.id">
                     <td class="scoreboard__table-cell">
-                        Name
+                        {{ score.name }}
                     </td>
                     <td class="scoreboard__table-cell">
-                        <span class="scoreboard__message-points">75</span>
+                        <span class="scoreboard__message-points">{{ score.score }}</span>
                     </td>
                     <td class="scoreboard__table-cell">
-                        2.25 seconds
+                        {{ score.draws }}
                     </td>
                     <td class="scoreboard__table-cell">
-                        01:25
+                        {{ score.averageDrawTime }} seconds
                     </td>
                     <td class="scoreboard__table-cell">
-                        Oct 19th, 2018
-                    </td>
-                </tr>
-                <tr class="scoreboard__table-row">
-                    <td class="scoreboard__table-cell">
-                        Name Namesson
+                        {{ score.totalTime }}
                     </td>
                     <td class="scoreboard__table-cell">
-                        <span class="scoreboard__message-points">75</span>
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        2.25 seconds
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        01:25
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        Oct 19th, 2018
-                    </td>
-                </tr>
-                <tr class="scoreboard__table-row">
-                    <td class="scoreboard__table-cell">
-                        Name Johnsson
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        <span class="scoreboard__message-points">75</span>
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        2.25 seconds
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        01:25
-                    </td>
-                    <td class="scoreboard__table-cell">
-                        Oct 19th, 2018
+                        {{ formatDate(score.playedDate) }}
                     </td>
                 </tr>
             </tbody>
+
+            <tbody v-if="scores.length == 0">
+                <tr class="scoreboard__table-row">
+                    <td class="scoreboard__table-cell" colspan="6">
+                        Nothing here yet!
+                    </td>
+                </tr>
+            </tbody>
+
         </table>
 
     </div>

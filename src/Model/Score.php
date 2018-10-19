@@ -17,27 +17,32 @@ class Score
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=60)
+     * @ORM\Column(type="string", length=60, nullable=true)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $score;
 
     /**
-     * @ORM\Column(type="decimal", precision=5, scale=3)
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $draws;
+
+    /**
+     * @ORM\Column(type="string", length=10, nullable=true)
      */
     private $averageDrawTime;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=10, nullable=true)
      */
     private $totalTime;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $playedDate;
 
@@ -60,7 +65,7 @@ class Score
 
     public function getScore(): ?int
     {
-        return $this->name;
+        return $this->score;
     }
 
     public function setScore(int $score): self
@@ -70,12 +75,24 @@ class Score
         return $this;
     }
 
-    public function getAverageDrawTime(): ?float
+    public function getDraws(): ?int
+    {
+        return $this->draws;
+    }
+
+    public function setDraws(int $draws): self
+    {
+        $this->draws = $draws;
+
+        return $this;
+    }
+
+    public function getAverageDrawTime(): ?string
     {
         return $this->averageDrawTime;
     }
 
-    public function setAverageDrawTime(float $averageDrawTime): self
+    public function setAverageDrawTime(string $averageDrawTime): self
     {
         $this->averageDrawTime = $averageDrawTime;
 

@@ -43,9 +43,6 @@
                 <c-button to="/scoreboard" width="50%">
                     Scoreboard
                 </c-button>
-                <c-button to="/instructions" width="50%">
-                    Instructions
-                </c-button>
             </c-button-group>
         </div>
     </div>

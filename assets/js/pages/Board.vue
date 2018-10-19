@@ -47,14 +47,35 @@
 
         methods: {
             onStartClick() {
+                this.startGame();
+            },
+
+            onPlayAgainClick() {
+                this.startGame();
+            },
+
+            onChoiceClick(choice) {
                 this.loading = true;
-                let url;
+
+                let url = api.draw.replace('{id}', this.deck.id);
+                let card = this.deck.card;
+                let config = {
+                    params: {
+                        choice,
+                    },
+                };
+
+                axios.post(url, card, config)
+                    .then(this.handleResponse)
+                    .catch(this.handleError);
+            },
+
+            startGame() {
+                this.loading = true;
+                let url = api.new;
 
                 if (this.session.isValid()) {
-                    url = api.restart.replace('{id}', this.session.getDeckId());
-                }
-                else {
-                    url = api.new;
+                    url = api.restart.replace('{id}', this.session.deckId);
                 }
 
                 axios.get(url)
@@ -72,6 +93,8 @@
                         if (!this.session.isValid()) {
                             this.session.saveDeckId(deck.id);
                         }
+
+                        this.session.startNewGame();
                     })
                     .catch(err => {
                         this.loading = false;
@@ -79,68 +102,35 @@
                     });
             },
 
-            onChoiceClick(choice) {
-                this.loading = true;
+            handleResponse(response) {
+                this.loading = false;
+                console.log(response);
 
-                let url = api.draw.replace('{id}', this.deck.id);
-                let card = this.deck.card;
-                let config = {
-                    params: {
-                        choice,
-                    },
-                };
+                let isCorrect = response.data.isCorrect;
+                let deck = response.data.deck;
 
-                axios.post(url, card, config)
-                    .then(response => {
-                        this.loading = false;
-                        console.log(response);
+                this.$store.commit('updateDeck', deck);
 
-                        let isCorrect = response.data.isCorrect;
-                        let deck = response.data.deck;
+                if (!isCorrect) {
+                    this.$store.commit('triggerGameOver');
 
-                        if (!isCorrect) {
-                            this.$store.commit('triggerGameOver');
+                    this.session.updateLastGame();
+                }
+                else if (deck.remaining == 0) {
+                    this.$store.commit('triggerWin');
 
-                            this.session.updateLastGame();
-                        }
-                        else {
-                            this.$store.commit('incrementScore');
-                            this.$store.commit('incrementDraws');
-                            this.$store.commit('resetTimeSinceLastDraw');
-                            this.$store.commit('updateDeck', deck);
-                        }
-                    })
-                    .catch(err => {
-                        this.loading = false;
-                        console.log(err);
-                    });
+                    this.session.updateLastGame();
+                }
+                else {
+                    this.$store.commit('incrementScore');
+                    this.$store.commit('incrementDraws');
+                    this.$store.commit('resetTimeSinceLastDraw');
+                }
             },
 
-            onSaveClick() {
-                console.log('Save to scoreboard');
-            },
-
-            onPlayAgainClick() {
-                this.loading = true;
-
-                let url = api.restart.replace('{id}', this.deck.id);
-
-                axios.get(url)
-                    .then(response => {
-                        this.loading = false;
-                        console.log(response);
-
-                        let deck = response.data.deck;
-
-                        this.$store.commit('reset');
-                        this.$store.commit('start');
-                        this.$store.commit('incrementDraws');
-                        this.$store.commit('updateDeck', deck);
-                    })
-                    .catch(err => {
-                        this.loading = false;
-                        console.log(err);
-                    });
+            handleError(err) {
+                this.loading = false;
+                console.log(err);
             },
         },
     }
@@ -212,22 +202,12 @@
             }
         }
     }
-
-    .header {
-        text-align: center;
-
-        &__logo {
-            height: 200px;
-        }
-    }
 </style>
 
 <template>
     <div class="board">
 
-        <header class="header board__row">
-            <img class="header__logo" src="/images/logo.svg" alt="Logotype" />
-        </header>
+        <c-header />
 
         <div class="board__decks board__row">
             <c-card image="/images/deck.png"></c-card>
@@ -265,7 +245,7 @@
                         You made the wrong choice, but you reached <strong class="board__message-points">{{ score }}</strong> points. Good job!
                     </p>
                     <c-button-group direction="column" :gutter="15">
-                        <c-button :action="onSaveClick">Save to scoreboard</c-button>
+                        <c-button to="/scoreboard/save">Save to scoreboard</c-button>
                         <c-button :action="onPlayAgainClick">Play again</c-button>
                     </c-button-group>
                 </div>
