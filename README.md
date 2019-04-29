@@ -20,10 +20,10 @@ If you want to develop and contribute to the game, you'll also need:
 
 ## Installation
 
-Extract the ZIP to desired location, then run the following script in the folder:
+Clone the project to your computer:
 
 ```bash
-$ composer install
+$ git clone https://github.com/lorceroth/high-low-same.git
 ```
 
 ## Usage
