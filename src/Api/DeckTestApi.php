@@ -7,9 +7,6 @@ use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Normally it would be good practice to test against third party APIs to make sure
- * they don't make breaking changes that can brake our application.
- *
  * This class is a simple mock of Deck of Cards API to avoid creating 100s of
  * new decks when running tests. *cough* :)
  */
