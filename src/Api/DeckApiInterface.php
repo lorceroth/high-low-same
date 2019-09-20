@@ -16,7 +16,7 @@ interface DeckApiInterface
     /**
      * Gets a brand new deck.
      *
-     * @return void
+     * @return ResponseInterface
      */
     public function getNewDeck(): ResponseInterface;
 
@@ -25,7 +25,7 @@ interface DeckApiInterface
      *
      * @param string $deckId
      *
-     * @return void
+     * @return ResponseInterface
      */
     public function drawCard(string $deckId): ResponseInterface;
 
@@ -34,7 +34,7 @@ interface DeckApiInterface
      *
      * @param string $deckId
      *
-     * @return void
+     * @return ResponseInterface
      */
     public function reshuffleCards(string $deckId): ResponseInterface;
 }
